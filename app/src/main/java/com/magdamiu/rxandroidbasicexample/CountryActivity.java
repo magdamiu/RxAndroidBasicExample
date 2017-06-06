@@ -66,29 +66,29 @@ public class CountryActivity extends MainActivity {
         }
     }
 
-    // 1
+    // create a method that returns an observable that will emit strings
     private Observable<String> createButtonClickObservable() {
 
-        // 2
+        // create an observable with Observable.create(), and supply it with a new ObservableOnSubscribe
         return Observable.create(new ObservableOnSubscribe<String>() {
 
-            // 3
+            // define an ObservableOnSubscribe by overriding subscribe()
             @Override
             public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
-                // 4
+                // implement the OnClickListener on searchButton
                 searchButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // 5
+                        // on click, call onNext on the emitter and pass it the current text value of the EditText
                         emitter.onNext(countryEditText.getText().toString());
                     }
                 });
 
-                // 6
+                // call this when will be disposable
                 emitter.setCancellable(new Cancellable() {
                     @Override
                     public void cancel() throws Exception {
-                        // 7
+                        // remove the listener
                         searchButton.setOnClickListener(null);
                     }
                 });
@@ -96,13 +96,10 @@ public class CountryActivity extends MainActivity {
         });
     }
 
-    //1
     private Observable<String> createTextChangeObservable() {
-        //2
         Observable<String> textChangeObservable = Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
-                //3
                 final TextWatcher watcher = new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -112,17 +109,14 @@ public class CountryActivity extends MainActivity {
                     public void afterTextChanged(Editable s) {
                     }
 
-                    //4
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         emitter.onNext(s.toString());
                     }
                 };
 
-                //5
                 countryEditText.addTextChangedListener(watcher);
 
-                //6
                 emitter.setCancellable(new Cancellable() {
                     @Override
                     public void cancel() throws Exception {
